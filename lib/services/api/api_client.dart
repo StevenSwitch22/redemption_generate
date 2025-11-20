@@ -1,8 +1,8 @@
-import 'package:dio/adapter.dart';
+import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 import '../../config/constants.dart';
 import 'package:flutter/foundation.dart';
-import 'dart:io';
 
 class ApiClient {
   static final ApiClient _instance = ApiClient._internal();
@@ -27,10 +27,14 @@ class ApiClient {
     _dio = Dio(options);
 
     // 配置 HTTP 客户端以信任所有证书（仅用于开发/自签名证书）
-    (_dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (HttpClient client) {
-      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
-      return client;
-    };
+    // Dio 5.x 新的配置方式
+    _dio.httpClientAdapter = IOHttpClientAdapter(
+      createHttpClient: () {
+        final client = HttpClient();
+        client.badCertificateCallback = (cert, host, port) => true;
+        return client;
+      },
+    );
 
     _dio.interceptors.add(
       InterceptorsWrapper(
