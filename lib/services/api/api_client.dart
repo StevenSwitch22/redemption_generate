@@ -26,18 +26,19 @@ class ApiClient {
 
     _dio = Dio(options);
 
-    // 生产环境：使用系统默认的证书验证
-    // 如果需要在 debug 模式下信任自签名证书，可以添加条件判断
-    if (kDebugMode) {
-      // 仅在 debug 模式下信任所有证书（方便开发调试）
-      _dio.httpClientAdapter = IOHttpClientAdapter(
-        createHttpClient: () {
-          final client = HttpClient();
-          client.badCertificateCallback = (cert, host, port) => true;
-          return client;
-        },
-      );
-    }
+    // 针对自签名证书的处理
+    // 注意：这会降低安全性，生产环境建议使用正规 CA 证书
+    _dio.httpClientAdapter = IOHttpClientAdapter(
+      createHttpClient: () {
+        final client = HttpClient();
+        // 信任自签名证书（因为后端使用的是自签名证书）
+        client.badCertificateCallback = (cert, host, port) {
+          // 可以添加更严格的验证，比如检查特定的证书指纹
+          return host == '47.104.12.235';
+        };
+        return client;
+      },
+    );
 
     _dio.interceptors.add(
       InterceptorsWrapper(
