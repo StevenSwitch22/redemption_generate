@@ -254,21 +254,33 @@ class PlantSelectionScreen extends ConsumerWidget {
 
           // 生成按钮
           ElevatedButton.icon(
-            onPressed: state.canGenerate
+            onPressed: state.canGenerate && !state.isLoading
                 ? () async {
                     await ref.read(multiPlantProvider.notifier).generateCode();
-                    if (context.mounted && state.generatedCode != null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ResultScreen(),
-                        ),
-                      );
+                    if (context.mounted) {
+                      final currentState = ref.read(multiPlantProvider);
+                      if (currentState.generatedCode != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ResultScreen(),
+                          ),
+                        );
+                      }
                     }
                   }
                 : null,
-            icon: const Icon(Icons.card_giftcard),
-            label: const Text('生成礼包码'),
+            icon: state.isLoading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : const Icon(Icons.card_giftcard),
+            label: Text(state.isLoading ? '生成中...' : '生成礼包码'),
             style: ElevatedButton.styleFrom(
               backgroundColor:
                   state.canGenerate ? colorScheme.primary : Colors.grey,

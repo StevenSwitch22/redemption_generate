@@ -76,8 +76,29 @@ class MultiCostumeNotifier extends StateNotifier<MultiCostumeState> {
         return;
       }
 
-      // 构造关键词：用空格拼接所有装扮ID
-      final keyword = state.selectedCostumes.map((c) => c.id).join(' ');
+      // 按照页面原始顺序排序选中的装扮ID
+      // 从CostumePools获取原始顺序
+      final originalOrder = <String, int>{};
+      // 需要导入CostumePools，所以先创建索引映射
+      final allCostumesIds = [
+        '30010082', '30010394', '30010451', '30010703',
+        '31110224', '31110292', '31110303', '31110672',
+        '31110704', '32000344', '32000792', '32000832',
+      ];
+      for (var i = 0; i < allCostumesIds.length; i++) {
+        originalOrder[allCostumesIds[i]] = i;
+      }
+
+      // 根据原始顺序排序选中的装扮
+      final sortedCostumes = List<CostumeItem>.from(state.selectedCostumes)
+        ..sort((a, b) {
+          final indexA = originalOrder[a.id] ?? 999;
+          final indexB = originalOrder[b.id] ?? 999;
+          return indexA.compareTo(indexB);
+        });
+
+      // 构造关键词：用空格拼接排序后的装扮ID
+      final keyword = sortedCostumes.map((c) => c.id).join(' ');
 
       final response = await searchService.generateCode(
         keyword: keyword,

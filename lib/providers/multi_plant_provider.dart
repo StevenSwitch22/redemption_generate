@@ -100,8 +100,23 @@ class MultiPlantNotifier extends StateNotifier<MultiPlantState> {
         return;
       }
 
-      // 构造关键词：用空格拼接所有植物ID
-      final keyword = state.selectedPlants.map((p) => p.id).join(' ');
+      // 按照页面原始顺序排序选中的植物ID
+      // 创建一个Map来存储原始顺序的索引
+      final originalOrder = <String, int>{};
+      for (var i = 0; i < state.selectedPool!.plants.length; i++) {
+        originalOrder[state.selectedPool!.plants[i].id] = i;
+      }
+
+      // 根据原始顺序排序选中的植物
+      final sortedPlants = List<PlantItem>.from(state.selectedPlants)
+        ..sort((a, b) {
+          final indexA = originalOrder[a.id] ?? 999;
+          final indexB = originalOrder[b.id] ?? 999;
+          return indexA.compareTo(indexB);
+        });
+
+      // 构造关键词：用空格拼接排序后的植物ID
+      final keyword = sortedPlants.map((p) => p.id).join(' ');
 
       final response = await searchService.generateCode(
         keyword: keyword,

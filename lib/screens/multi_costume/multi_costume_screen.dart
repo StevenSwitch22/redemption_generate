@@ -255,13 +255,22 @@ class MultiCostumeScreen extends ConsumerWidget {
 
           // 生成按钮
           ElevatedButton.icon(
-            onPressed: state.canGenerate
+            onPressed: state.canGenerate && !state.isLoading
                 ? () async {
                     await ref.read(multiCostumeProvider.notifier).generateCode();
                   }
                 : null,
-            icon: const Icon(Icons.style),
-            label: const Text('生成装扮礼包码'),
+            icon: state.isLoading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : const Icon(Icons.style),
+            label: Text(state.isLoading ? '生成中...' : '生成装扮礼包码'),
             style: ElevatedButton.styleFrom(
               backgroundColor: state.canGenerate ? Colors.purple : Colors.grey,
               foregroundColor: Colors.white,
@@ -485,7 +494,7 @@ class MultiCostumeScreen extends ConsumerWidget {
                           );
                         },
                         icon: const Icon(Icons.copy),
-                        label: const Text('📋 复制礼包码'),
+                        label: const Text(' 复制礼包码'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.purple,
                           foregroundColor: Colors.white,
@@ -505,7 +514,7 @@ class MultiCostumeScreen extends ConsumerWidget {
                 ref.read(multiCostumeProvider.notifier).resetSelection();
               },
               icon: const Icon(Icons.arrow_back),
-              label: const Text('⬅️ 返回修改装扮'),
+              label: const Text(' 返回修改装扮'),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
@@ -519,7 +528,7 @@ class MultiCostumeScreen extends ConsumerWidget {
                 Navigator.pop(context);
               },
               icon: const Icon(Icons.refresh),
-              label: const Text('🔄 重新开始'),
+              label: const Text(' 重新开始'),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
