@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- 允许所有域名的明文 HTTP 流量（开发用） -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <!-- 信任系统预装的 CA 证书 -->
+            <certificates src="system" />
+            <!-- 信任用户安装的 CA 证书 -->
+            <certificates src="user" />
+        </trust-anchors>
+    </base-config>
+    
+    <!-- 针对特定 IP 的配置 -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">47.104.12.235</domain>
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </domain-config>
+</network-security-config>
