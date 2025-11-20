@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../single_plant/single_plant_screen.dart';
+import '../multi_plant/mode_selection_screen.dart';
+import '../multi_costume/multi_costume_screen.dart';
 
 class MainScreen extends ConsumerWidget {
   const MainScreen({super.key});
@@ -28,7 +31,14 @@ class MainScreen extends ConsumerWidget {
               icon: Icons.eco_outlined,
               title: '单植物/装扮礼包',
               subtitle: '单个植物生成礼包',
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SinglePlantScreen(),
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 12),
             _buildMenuCard(
@@ -36,7 +46,14 @@ class MainScreen extends ConsumerWidget {
               icon: Icons.nature_outlined,
               title: '多植物礼包',
               subtitle: '从多个植物中选择组合生成',
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ModeSelectionScreen(),
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 12),
             _buildMenuCard(
@@ -44,7 +61,14 @@ class MainScreen extends ConsumerWidget {
               icon: Icons.style_outlined,
               title: '多装扮礼包',
               subtitle: '12个超级装扮任意选择',
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MultiCostumeScreen(),
+                  ),
+                );
+              },
             ),
             const Spacer(),
             Column(
