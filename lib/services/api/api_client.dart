@@ -26,15 +26,18 @@ class ApiClient {
 
     _dio = Dio(options);
 
-    // 配置 HTTP 客户端以信任所有证书（仅用于开发/自签名证书）
-    // Dio 5.x 新的配置方式
-    _dio.httpClientAdapter = IOHttpClientAdapter(
-      createHttpClient: () {
-        final client = HttpClient();
-        client.badCertificateCallback = (cert, host, port) => true;
-        return client;
-      },
-    );
+    // 生产环境：使用系统默认的证书验证
+    // 如果需要在 debug 模式下信任自签名证书，可以添加条件判断
+    if (kDebugMode) {
+      // 仅在 debug 模式下信任所有证书（方便开发调试）
+      _dio.httpClientAdapter = IOHttpClientAdapter(
+        createHttpClient: () {
+          final client = HttpClient();
+          client.badCertificateCallback = (cert, host, port) => true;
+          return client;
+        },
+      );
+    }
 
     _dio.interceptors.add(
       InterceptorsWrapper(
