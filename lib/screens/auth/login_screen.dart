@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:safe_device/safe_device.dart';
 import '../../providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -12,6 +13,29 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController _licenseController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _isEnvironmentSafe = true;
+
+  Future<bool> _ensureSafeEnvironment() async {
+    final isRealDevice = await SafeDevice.isRealDevice;
+    final isJailBroken = await SafeDevice.isJailBroken;
+    final isMockLocation = await SafeDevice.isMockLocation;
+    final isOnExternalStorage = await SafeDevice.isOnExternalStorage;
+
+    final safe = isRealDevice && !isJailBroken && !isMockLocation && !isOnExternalStorage;
+    if (!safe && mounted) {
+      setState(() {
+        _isEnvironmentSafe = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('检测到不安全环境，已阻止操作')),
+      );
+    } else if (mounted) {
+      setState(() {
+        _isEnvironmentSafe = true;
+      });
+    }
+    return safe;
+  }
 
   @override
   void dispose() {
@@ -21,6 +45,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _handleActivate() async {
     if (!_formKey.currentState!.validate()) return;
+    if (!await _ensureSafeEnvironment()) return;
 
     final licenseKey = _licenseController.text.trim();
     final success = await ref.read(authProvider.notifier).login(licenseKey);
@@ -124,6 +149,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
                   const SizedBox(height: 24),
+                  if (!_isEnvironmentSafe)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Text(
+                        '当前设备环境不安全，部分功能已禁用',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.error,
+                        ),
+                      ),
+                    ),
                   SizedBox(
                     width: double.infinity,
                     height: 56,

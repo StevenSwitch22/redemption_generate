@@ -1,7 +1,7 @@
 class AppConstants {
   static const String appName = '兑换码生成系统';
   
-  static const String apiBaseUrl = 'https://seekforme.me/api';
+  static const String apiBaseUrl = 'https://47.104.12.235/api';
   
   static const int connectTimeout = 30000;
   static const int receiveTimeout = 30000;
