@@ -10,7 +10,7 @@ void main() async {
   final storage = SecureStorageService();
   final token = await storage.getToken();
 
-  ApiClient().initialize(token: token);
+  await ApiClient().initialize(token: token);
 
   final isAuthenticated = token != null && token.isNotEmpty;
 
